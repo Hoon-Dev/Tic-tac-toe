@@ -1,4 +1,10 @@
 <template>
+  <div
+    class="header"
+    :class="{'logined': isLogined}"
+  >
+    <wallet-multi-button></wallet-multi-button>
+  </div>
   <div class="container">
     <div>
       <transition-group name="board">
@@ -66,9 +72,43 @@ const isLogined = computed(() => {
 body {
   margin: 0;
 }
+
+.header {
+  .swv-button{
+    color: #1f2937;
+  }
+
+  .swv-button:not([disabled]):hover {
+    background-color: white;
+  }
+
+  .swv-button-trigger {
+    background-color: white;
+  }
+}
 </style>
 
 <style lang="scss" scoped>
+.header {
+  opacity: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: end;
+  background: white;
+  box-shadow: 0 4px 10px -6px darkgrey;
+  
+  transition-duration: 0s;
+
+  &.logined {
+    opacity: 1;
+    transition-duration: .5s;
+    transition-delay: 1.2s;
+  }
+}
+
 .container {
   height: 100vh;
   display: flex;
