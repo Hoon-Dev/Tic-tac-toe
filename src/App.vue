@@ -1,4 +1,6 @@
 <template>
+  <create-room-popup v-if="popupState == 'CREATE_ROOM'"/>
+  <join-room-popup v-if="popupState == 'JOIN_ROOM'"/>
   <div
     class="header"
     :class="{'logined': isLogined}"
@@ -9,8 +11,14 @@
     <div>
       <transition-group name="board">
         <div v-if="isLogined" class="controller">
-          <button class="button">참가하기</button>
-          <button class="button outline">방 만들기</button>
+          <button
+            @click="openPopup('JOIN_ROOM')"
+            class="button"
+          >참가하기</button>
+          <button
+            @click="openPopup('CREATE_ROOM')"
+            class="button outline"
+          >방 만들기</button>
         </div>
         <div class="board">
           <div v-if="!isLogined">
@@ -39,6 +47,8 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { WalletMultiButton, useWallet } from "solana-wallets-vue";
+import CreateRoomPopup from "@/components/CreateRoomPopup.vue";
+import JoinRoomPopup from "@/components/JoinRoomPopup.vue";
 
 const BOARD_INFO = {
   0: "",
@@ -54,6 +64,16 @@ const board = ref([
   0, 0, 0,
   0, 0, 0
 ]);
+
+type PopupType = "NONE" | "CREATE_ROOM" | "JOIN_ROOM";
+
+const popupState = ref<PopupType>("NONE");
+
+const openPopup = (popup: PopupType) => {
+  popupState.value = (
+    popup == popupState.value ? "NONE" : popup
+  );
+}
 
 const isLogined = computed(() => {
   return useWallet().connected.value;
