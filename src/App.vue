@@ -152,6 +152,7 @@ body {
 }
 
 .button {
+  font-weight: bold;
   font-size: 16px;
   cursor: pointer;
   font-size: 14px;
@@ -161,6 +162,7 @@ body {
   outline: 0;
   border: 0;
   padding: 10px 20px;
+  box-shadow: 0 4px 3px -2px #c2c2c2;
 
   &:hover:not(:active) {
     background: rgb(80 80 80);
