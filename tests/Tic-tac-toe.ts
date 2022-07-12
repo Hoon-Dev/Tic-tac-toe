@@ -30,11 +30,12 @@ describe("Tic-tac-toe", () => {
     providerOption
   );
 
-  anchor.setProvider(anchor.AnchorProvider.env());
+  anchor.setProvider(userOneProvider);
 
   const program = anchor.workspace.TicTacToe as Program<TicTacToe>;
 
   it("User1 Create Room", async () => {
+    
   });
 
   it("User2 Join Room", async () => {
