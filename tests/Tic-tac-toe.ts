@@ -2,7 +2,7 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { TicTacToe } from "../target/types/tic_tac_toe";
 
-describe("Tic-tac-toe", () => {
+describe("Tic-tac-toe", async () => {
   const connnection = new anchor.web3.Connection("http://127.0.0.1:8899");
 
   const providerOption: anchor.web3.ConfirmOptions = {
@@ -14,6 +14,9 @@ describe("Tic-tac-toe", () => {
   const userOneWallet = new anchor.Wallet(userOneKeypair);
   console.log(`user1 pubkey: ${userOneKeypair.publicKey}`);
 
+  await connnection.requestAirdrop(userOneKeypair.publicKey, 10);
+  console.log(`user1 balance: ${connnection.getBalance(userOneKeypair.publicKey)}`);
+
   const userOneProvider = new anchor.AnchorProvider(
     connnection,
     userOneWallet,
@@ -23,6 +26,9 @@ describe("Tic-tac-toe", () => {
   const userTwoKeypair = anchor.web3.Keypair.generate();
   const userTwoWallet = new anchor.Wallet(userTwoKeypair);
   console.log(`user2 pubkey: ${userTwoKeypair.publicKey}`);
+
+  await connnection.requestAirdrop(userTwoKeypair.publicKey, 10);
+  console.log(`user2 balance: ${connnection.getBalance(userTwoKeypair.publicKey)}`);
 
   const userTwoProvider = new anchor.AnchorProvider(
     connnection,
@@ -35,7 +41,7 @@ describe("Tic-tac-toe", () => {
   const program = anchor.workspace.TicTacToe as Program<TicTacToe>;
 
   it("User1 Create Room", async () => {
-    
+    // await 
   });
 
   it("User2 Join Room", async () => {
