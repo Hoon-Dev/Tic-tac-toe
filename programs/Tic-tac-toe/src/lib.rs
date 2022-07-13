@@ -52,7 +52,7 @@ pub struct CreatePlayerInfo<'info> {
             b"player-info",
             signer.key().as_ref()
         ], bump,
-        space = 3
+        space = 8 + 3
     )]
     pub player_info: Account<'info, PlayerInfo>,
     #[account(mut)]
