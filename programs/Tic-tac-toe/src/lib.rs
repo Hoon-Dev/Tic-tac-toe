@@ -6,19 +6,29 @@ declare_id!("2Vp6DmE6YL9ffS8bb215YbWS6jBBWtADpmpXFYbx2eRv");
 pub mod tic_tac_toe {
     use super::*;
 
-    pub fn create_player_info(mut ctx: Context<CreatePlayerInfo>) -> Result<()> {
-        let accounts = &mut ctx.accounts;
+    pub fn create_player_info(ctx: Context<CreatePlayerInfo>) -> Result<()> {
+        let accounts = ctx.accounts;
         accounts.player_info.created_room_count = 0;
         accounts.player_info.bump = *ctx.bumps.get("player_info").unwrap();
         Ok(())
     }
 
     pub fn create_room(ctx: Context<CreateRoom>, bet: u8) -> Result<()> {
-        // Room account 만든다.
-
-        // let a = Clock::get().unwrap();
-        // msg!("{}", a.unix_timestamp);
-
+        let accounts = ctx.accounts;
+        accounts.room.o = None;
+        accounts.room.x = None;
+        accounts.room.current_turn = Player::o;
+        accounts.room.playing = GameState::Waiting { Waiter: accounts.signer.key() };
+        accounts.room.beted = bet;
+        accounts.room.last_turn_time = 0;
+        accounts.room.created_time = Clock::get().unwrap().unix_timestamp;
+        accounts.room.board = [
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0
+        ];
+        accounts.room.bump = *ctx.bumps.get("room").unwrap();
+        accounts.player_info.created_room_count += 1;
         Ok(())
     }
 
@@ -62,30 +72,38 @@ pub struct CreatePlayerInfo<'info> {
 
 #[account]
 pub struct Room {
-    o: Pubkey,            // 32
-    x: Pubkey,            // 32
+    o: Option<Pubkey>,    // 1 + 32
+    x: Option<Pubkey>,    // 1 + 32
     current_turn: Player, // 1
-    playing: GameState,   // 1 + 32
+    playing: GameState,   // 1 + 32 + 32
     beted: u8,            // 1
     last_turn_time: i64,  // 8
     created_time: i64,    // 8
     board: [u8; 9],       // 9
-    bump: u8
+    bump: u8              // 1
 }
 
 impl Room {
-    pub const ALLOC_SIZE: usize = 124;
+    pub const ALLOC_SIZE: usize = 159;
 }
 
 #[derive(Accounts)]
 pub struct CreateRoom<'info> {
+    #[account(
+        seeds = [
+            b"player-info",
+            signer.key().as_ref()
+        ],
+        bump = player_info.bump
+    )]
     pub player_info: Account<'info, PlayerInfo>,
     #[account(
         init,
         payer = signer,
         seeds = [
             b"room",
-            player_info.created_room_count.to_be_bytes().as_ref()
+            signer.key().as_ref(),
+            player_info.created_room_count.to_le_bytes().as_ref()
         ], bump,
         space = 8 + Room::ALLOC_SIZE,
     )]
@@ -126,7 +144,7 @@ pub enum Player {
     Clone
 )]
 pub enum GameState {
-    Waiting,
+    Waiting { Waiter: Pubkey },
     Playing,
     End { winner: Pubkey }
 }
