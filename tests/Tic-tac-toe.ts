@@ -1,7 +1,12 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { TicTacToe } from "../target/types/tic_tac_toe";
-import { requestAirDrop, fetchAccount, uint16ToUint8Array } from "./lib";
+import { 
+  getProgram,
+  requestAirDrop,
+  fetchAccount,
+  uint16ToUint8Array
+} from "./lib";
 
 const USE_STATIC_WALLET = true;
 
@@ -86,8 +91,7 @@ describe("Tic-tac-toe", async () => {
   });
 
   it("User1 create room with bet 100 lamport", async () => {
-    anchor.setProvider(userOneProvider);
-    const program = anchor.workspace.TicTacToe as Program<TicTacToe>;
+    const program = getProgram(userOneProvider);
 
     console.log("- find user1 info pda: running ...");
     const [userOneInfoPDA, _bump1] = await anchor.web3.PublicKey.findProgramAddress(
@@ -137,7 +141,7 @@ describe("Tic-tac-toe", async () => {
 
     console.log("- create user1 room: running ...");
     await program.methods
-      .createRoom(100)
+      .createRoom(_bump2, 100)
       .accounts({
         playerInfo: userOneInfoPDA,
         room: userOneRoomPDA,

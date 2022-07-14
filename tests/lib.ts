@@ -56,3 +56,8 @@ export async function fetchAccount(
 export function uint16ToUint8Array(uint16Number: number) {
   return new Uint8Array([uint16Number >> 8, uint16Number]);
 }
+
+export function getProgram(setProvider: anchor.AnchorProvider): Program<TicTacToe> {
+  anchor.setProvider(setProvider);
+  return anchor.workspace.TicTacToe as Program<TicTacToe>;
+}

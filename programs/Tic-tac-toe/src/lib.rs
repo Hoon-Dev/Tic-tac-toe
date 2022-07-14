@@ -13,7 +13,7 @@ pub mod tic_tac_toe {
         Ok(())
     }
 
-    pub fn create_room(ctx: Context<CreateRoom>, bet: u8) -> Result<()> {
+    pub fn create_room(ctx: Context<CreateRoom>, bump: u8, bet: u8) -> Result<()> {
         let accounts = ctx.accounts;
         accounts.room.o = None;
         accounts.room.x = None;
@@ -27,7 +27,7 @@ pub mod tic_tac_toe {
             0, 0, 0,
             0, 0, 0
         ];
-        accounts.room.bump = *ctx.bumps.get("room").unwrap();
+        accounts.room.bump = bump; // *ctx.bumps.get("room").unwrap();
         accounts.player_info.created_room_count += 1;
         Ok(())
     }
