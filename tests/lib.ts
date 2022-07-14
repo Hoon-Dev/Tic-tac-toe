@@ -1,4 +1,11 @@
+/*
+  name: lib
+  desc: 테스트 코드용 라이브러리 모음
+*/
+
 import * as anchor from "@project-serum/anchor";
+import { Program } from "@project-serum/anchor";
+import { TicTacToe } from "../target/types/tic_tac_toe";
 
 export async function requestAirDrop(
   connection: anchor.web3.Connection,
@@ -23,19 +30,25 @@ export async function requestAirDrop(
   console.log("- confirm transaction: complete");
 }
 
-export async function getPlayerInfo(
-  connection: anchor.web3.Connection,
-  playerInfoPDA: anchor.web3.PublicKey,
-  userDebugName: string = "user"
-): Promise<anchor.web3.AccountInfo<Buffer> | null> {
-  console.log(`- get ${userDebugName} info: running ...`);
-  const userOneInfo = await connection.getAccountInfo(playerInfoPDA, "confirmed");
-  console.log(`- get ${userDebugName} info: complete ...`);
+export async function fetchAccount(
+  program: Program<TicTacToe>,
+  accountName: "playerInfo" | "room",
+  address: anchor.web3.PublicKey,
+  accountDebugName: string = "account"
+) {
+  console.log(`- get ${accountDebugName} info: running ...`);
+  let info;
+  try {
+    info = await program.account[accountName].fetch(address, "confirmed");
+  } catch(e) {
+    info = undefined;
+  }
+  console.log(`- get ${accountDebugName} info: complete ...`);
 
   console.log(`
-      # ${userDebugName}
-      - info: ${userOneInfo == null ? "NO_INFO" : JSON.stringify(userOneInfo)}
+      # ${accountDebugName}
+      - info: ${info == undefined ? "NO_INFO" : JSON.stringify(info)}
   `);
 
-  return userOneInfo;
+  return info;
 }
