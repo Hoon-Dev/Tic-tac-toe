@@ -1,7 +1,7 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { TicTacToe } from "../target/types/tic_tac_toe";
-import { requestAirDrop, fetchAccount } from "./lib";
+import { requestAirDrop, fetchAccount, uint16ToUint8Array } from "./lib";
 
 const USE_STATIC_WALLET = true;
 
@@ -120,13 +120,12 @@ describe("Tic-tac-toe", async () => {
       userOneInfo = await fetchAccount(program, "playerInfo", userOneInfoPDA, "user1");
     }
 
-    const userOneCreatedRoomCount = userOneInfo?.createdRoomCount ? userOneInfo.createdRoomCount : 0;
     console.log("- find user1 room pda: running ...");
     const [userOneRoomPDA, _bump2] = await anchor.web3.PublicKey.findProgramAddress(
       [
         anchor.utils.bytes.utf8.encode("room"),
         userOneKeypair.publicKey.toBuffer(),
-        new Uint8Array([userOneCreatedRoomCount >> 8, userOneCreatedRoomCount])
+        uint16ToUint8Array(userOneInfo?.createdRoomCount ? userOneInfo.createdRoomCount : 0)
       ],
       program.programId
     );

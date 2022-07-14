@@ -52,3 +52,7 @@ export async function fetchAccount(
 
   return info;
 }
+
+export function uint16ToUint8Array(uint16Number: number) {
+  return new Uint8Array([uint16Number >> 8, uint16Number]);
+}
