@@ -90,6 +90,7 @@ impl Room {
 #[derive(Accounts)]
 pub struct CreateRoom<'info> {
     #[account(
+        mut,
         seeds = [
             b"player-info",
             signer.key().as_ref()
@@ -103,7 +104,7 @@ pub struct CreateRoom<'info> {
         seeds = [
             b"room",
             signer.key().as_ref(),
-            player_info.created_room_count.to_le_bytes().as_ref()
+            player_info.created_room_count.to_be_bytes().as_ref()
         ], bump,
         space = 8 + Room::ALLOC_SIZE,
     )]
